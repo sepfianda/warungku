@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "Warungku",
+    "slug": "warungku",
+    "version": "1.0.0",
+    "scheme": "warungku",
+    "orientation": "landscape",
+    "platforms": [
+      "android",
+      "web"
+    ],
+    "android": {
+      "package": "com.warungku.app"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-camera"
+    ]
+  }
+}
