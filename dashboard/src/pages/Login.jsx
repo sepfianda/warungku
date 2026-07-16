@@ -1,30 +1,30 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import loginImage from "../assets/login.jpeg";
 import logo from "../assets/logo.jpeg";
+import { useLogin } from "../hooks/useLogin";
 
 export default function Login() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [show, setShow] = useState(false);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+
+  // ✅ React Query mutation
+  const { mutate: login, isPending, error } = useLogin();
 
   const handleLogin = (e) => {
     e.preventDefault();
-    setError("");
+
+    // Validasi lokal pakai toast
     if (!email || !password) {
-      setError("Email dan password wajib diisi");
+      toast.warn("Email dan password wajib diisi! ⚠️"); // ← ganti setLocalError
       return;
     }
-    setLoading(true);
-    setTimeout(() => {
-      // TODO: ganti dengan call ke Laravel Sanctum /login
-      navigate("/");
-    }, 800);
+
+    login({ email, password, remember });
   };
 
   return (
@@ -62,7 +62,7 @@ export default function Login() {
         <div className="w-full md:w-1/2 bg-white p-6 md:p-8 flex flex-col justify-center">
           {/* logo + judul sejajar horizontal */}
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-teal-50 border border-teal-100 flex flex-col items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-teal-50 border border-teal-100 flex flex-col items-center justify-center shrink-0">
               <img
                 src={logo}
                 alt="Logo Warungku"
@@ -136,19 +136,13 @@ export default function Login() {
               Ingat saya
             </label>
 
-            {error && (
-              <p className="text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg">
-                {error}
-              </p>
-            )}
-
             <button
               type="submit"
-              disabled={loading}
+              disabled={isPending}
               className="w-full flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-full py-2.5 transition-colors disabled:opacity-60"
             >
-              {loading ? "Memproses..." : "Masuk Sekarang"}
-              {!loading && <ArrowRight size={18} />}
+              {isPending ? "Memproses..." : "Masuk Sekarang"}
+              {!isPending && <ArrowRight size={18} />}
             </button>
           </form>
 

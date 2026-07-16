@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useAuthStore } from "./store/useAuthStore"; 
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
@@ -8,11 +9,10 @@ import ProductCreate from "./pages/ProductCreate";
 import ScanHistory from "./pages/ScanHistory";
 import Settings from "./pages/Setting";
 
-// Simple auth guard (demo)
-const isLoggedIn = () => sessionStorage.getItem("warungku_auth") === "1";
-
+// ✅ Auth guard pakai Zustand
 function RequireAuth({ children }) {
-  return isLoggedIn() ? children : <Navigate to="/login" replace />;
+  const token = useAuthStore((s) => s.token);
+  return token ? children : <Navigate to="/login" replace />;
 }
 
 export default function App() {
@@ -21,35 +21,36 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
 
+        {/* ✅ Semua route protected pakai RequireAuth */}
         <Route path="/" element={
-          <Layout>
-            <Home />
-          </Layout>
+          <RequireAuth>
+            <Layout><Home /></Layout>
+          </RequireAuth>
         } />
         <Route path="/inventory" element={
-          <Layout>
-            <Inventory />
-          </Layout>
+          <RequireAuth>
+            <Layout><Inventory /></Layout>
+          </RequireAuth>
         } />
         <Route path="/inventory/create" element={
-          <Layout>
-            <ProductCreate />
-          </Layout>
+          <RequireAuth>
+            <Layout><ProductCreate /></Layout>
+          </RequireAuth>
         } />
         <Route path="/inventory/:id" element={
-          <Layout>
-            <ProductDetail />
-          </Layout>
+          <RequireAuth>
+            <Layout><ProductDetail /></Layout>
+          </RequireAuth>
         } />
         <Route path="/history" element={
-          <Layout>
-            <ScanHistory />
-          </Layout>
+          <RequireAuth>
+            <Layout><ScanHistory /></Layout>
+          </RequireAuth>
         } />
         <Route path="/settings" element={
-          <Layout>
-            <Settings />
-          </Layout>
+          <RequireAuth>
+            <Layout><Settings /></Layout>
+          </RequireAuth>
         } />
 
         <Route path="*" element={<Navigate to="/" replace />} />

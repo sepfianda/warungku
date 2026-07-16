@@ -1,18 +1,17 @@
-import { create } from 'zustand'
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
-const useAuthStore = create((set) => ({
-  token: localStorage.getItem('token') || null,
-  user: null,
+export const useAuthStore = create(
+  persist(
+    (set) => ({
+      token: null,
+      user: null,
 
-  setAuth: (token, user) => {
-    localStorage.setItem('token', token)
-    set({ token, user })
-  },
-
-  logout: () => {
-    localStorage.removeItem('token')
-    set({ token: null, user: null })
-  },
-}))
-
-export default useAuthStore
+      setAuth: (token, user) => set({ token, user }),
+      clearAuth: () => set({ token: null, user: null }),
+    }),
+    {
+      name: "warungku-auth", // key di localStorage
+    }
+  )
+);
